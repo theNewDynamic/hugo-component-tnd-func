@@ -1,0 +1,34 @@
+{{/*
+  This split a collection of pages into groups containing x items
+
+  @author @regisphilibert
+
+  @context Slice
+     - Int (.perGroup)
+     - Page colection (.collection)
+
+  @access public
+
+  @example - Go Template
+    {{ partial "func/SliceSplit" (dict "perGroup" 6 "collection" $states) }}
+    {{ partialCached "func/SliceSplit" (dict "perGroup" 6 "collection" $states) 6 (printf %x $states) }}
+
+  TODO: We shouldn't have to use the length of collection to seq
+*/}}
+{{ $perGroup := .perGroup }}
+{{ $collection := .collection }}
+{{ $s := newScratch }}
+{{ $s.Set "groups" slice }}
+{{ $pool := slice }}
+{{ range seq (len $collection) }}
+  {{ if eq . 1 }}
+    {{ $pool = first $perGroup $collection | group . }}
+    {{ $s.Add "groups" $pool }}
+  {{ else }}
+    {{ $pool = first (mul . $perGroup) $collection | after (sub (mul . $perGroup) $perGroup) | group . }}
+    {{ with $pool.Pages }}
+      {{ $s.Add "groups" $pool }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $s.Get "groups" }}

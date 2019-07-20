@@ -1,0 +1,20 @@
+{{/* This is no deep merge... */}}
+{{ $maps := . }}
+{{ $keys := slice }}
+{{ range $maps }}
+    {{ range $index, $value := . }}
+        {{ $keys = $keys | append $index }}
+    {{ end }}
+{{ end }}
+{{ $keys = uniq $keys }}
+{{ $s := newScratch }}
+{{ $s.Add "data" dict }}
+{{ range $keys }}
+    {{ $key := . }}
+    {{ range $maps }}
+        {{ with index . $key }}
+            {{ $s.SetInMap "data" $key . }}   
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ return $s.Get "data" }}

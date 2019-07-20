@@ -1,0 +1,33 @@
+{{/*
+  IsExternalURL
+
+  Check if a given URL string is external to current site
+
+  @author @regisphilibert
+
+  @context String (.)
+
+  @access public
+
+  @return Boolean
+
+  @example - Go Template
+    {{ $external := partialCached "func/IsExternalURL" $link $link }}
+    <a 
+      href="{{ $link }}"
+      {{ if $external }} target="_blank" {{ end }}
+    >
+      {{ $title }}
+    </a>
+*/}}
+{{ $external := false }}
+{{/* Before anything we check if a the URL contains a protocole */}}
+{{ if in . "://" }}
+  {{/* Then we check if the BaseURL is absent */}}
+  {{ if not (in . site.BaseURL) }}
+    {{/* If not found, we're confident this is an external URL */}}
+    {{ $external = true }}
+  {{ end }}
+{{ end }}
+
+{{ return $external }}

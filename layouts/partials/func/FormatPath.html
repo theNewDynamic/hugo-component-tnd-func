@@ -1,0 +1,35 @@
+{{/*
+  Format a filepath to be relative to current's language's content dir to be consumed by GetPage
+  In other word safely transform
+  - `en/that-page.md` to `that-page.md`
+  - `fr/that-page.md` to `that-page.md`
+  - [...]
+
+  @author @regisphilibert
+
+	@access private
+
+  @context String ($path)
+
+  @return the path without current's language content directory if any
+
+  @example - Go Template
+    {{ $page = partial "func/FormatPath" "en/that-page.md" }}
+
+TODO:
+  - [ ] Make sure content dir can be anything and not necessarily `content/{languageCode}`
+*/}}
+{{ $path := . }}
+{{/* We get the current language */}}
+{{ $language := site.Language }}
+
+{{/* We remove the `content/` part from the language's `.ContentDir` so only the language part remains */}}
+{{ $contentDir := strings.TrimPrefix "content/" $language.ContentDir }}
+
+{{/* We add a slash to the language part. We now have the language part of the path */}}
+{{ $contentDirPath := add $contentDir "/" }}
+
+{{/* stings.TrimPrefix will remove $contentDirPath from the input path if found at the begining */}}
+{{ $path = strings.TrimPrefix $contentDirPath $path }}
+
+{{ return $path }}

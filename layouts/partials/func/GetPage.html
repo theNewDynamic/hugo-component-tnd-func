@@ -1,0 +1,23 @@
+{{/*
+  Fetch a page using the full file path of a file relative to content dir.
+  This format the input path to make sure it complies with GetPage expected path (relative to the content dir rather than content)
+
+  @author @regisphilibert
+
+  @context String ($path)
+
+  @return Page if GetPage succeeds, or false
+
+  @example - Go Template
+    {{ $page = partial "func/GetPage" .Params.related_page }}
+    {{ $page = partialCached "func/GetPage" .Params.related_page .Params.related_page }}
+*/}}
+{{ $path := . }}
+
+{{ $path = partialCached "func/FormatPath" $path $path }}
+
+{{ $return := false }}
+{{ with site.GetPage $path }}
+  {{ $return = . }}
+{{ end }}
+{{ return $return }}
