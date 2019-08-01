@@ -1,0 +1,28 @@
+{{/*
+  GetTranslations. Simply safely returns translation of a page as a slice
+
+  @author @regisphilibert
+
+  @context Page (.)
+
+  @access public
+
+  @return Slice
+          [...]
+          Page
+  
+  @example - Go Template
+    {{ range partialCached "func/GetTranslations" . .File.UniqueID }}
+      <a href="{{ .RelPermalink }}">{{ .Language.Lang }}</a>
+    {{ end }}
+*/}}
+
+{{ $translations := slice }}
+
+{{ if .IsTranslated }}
+  {{ with .Translations }}
+    {{ $translations = . }}
+  {{ end }}
+{{ end }}
+
+{{ return $translations }}
