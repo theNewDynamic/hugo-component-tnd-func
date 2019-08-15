@@ -5,23 +5,41 @@
   - `fr/that-page.md` to `that-page.md`
   - [...]
 
+  If you need to format a path with a given site language, rather than the current page's language, 
+  you should use a map with .lang set to a Hugo Site Language object and .path to the file path.
+
   @author @regisphilibert
 
 	@access private
 
-  @context String ($path)
+  @context String ($path) or Map 
+                              - String (.path)
+                              - Hugo Site Language (.lang)
 
   @return the path without current's language content directory if any
 
   @example - Go Template
-    {{ $page = partial "func/FormatPath" "en/that-page.md" }}
-
+    {{ $page = partialCached "func/FormatPath" "en/that-page.md" "en/that-page.md" }}
+    {{ $page = partialCached "func/FormatPath" (dict "path" "en/that-page.md" "lang" site.Sites.First.Language) "en/that-page.md"  }}
 TODO:
   - [ ] Make sure content dir can be anything and not necessarily `content/{languageCode}`
 */}}
 {{ $path := . }}
+{{ $language := false }}
+{{ if reflect.IsMap . }}
+  {{ $path = .path }}
+  {{/* Language has been passed by user */}}
+  {{ with .lang }}
+    {{ $language = . }}
+  {{ end }}
+{{ end }}
+
 {{/* We get the current language */}}
-{{ $language := site.Language }}
+{{ if not $language }}
+  {{ $language = site.Language }}
+{{ end }}
+
+
 
 {{/* We remove the `content/` part from the language's `.ContentDir` so only the language part remains */}}
 {{ $contentDir := strings.TrimPrefix "content/" $language.ContentDir }}

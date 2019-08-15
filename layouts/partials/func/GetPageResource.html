@@ -9,18 +9,22 @@
   @context Slice
     - Page ($bundle)
     - String ($path)
+    optional
+    - Language ($lang)
 
   @return Page Resource of Type page if success, false on failure
 
   @example - Go Template
-    {{ $page = partial "func/GetPageResource" (slice $bundle $path) }}
-    {{ $page = partial "func/GetPageResource" (slice $bundle .Params.page_resource) $bundle.File.Path $path }}
+    {{ $page = partial "func/GetPageResource" (slice $bundle $path) $bundle.File.UniqueID $path }}
+    {{ $page = partial "func/GetPageResource" (slice $bundle $path site.Sites.First.Language) $bundle.File.UniqueID $path }}
 
 We use a slice as context to simplify argument syntax and retrive both with index */}}
 {{ $bundle := index . 0 }}
 {{ $path := index . 1 }}
+{{/* If a third entry is passed to the slice, this is a language. This means the bunlde only lives in one language, this one */}}
+{{ $lang := index . 2 }}
 
-{{ $path = partialCached "func/FormatPath" $path $path }}
+{{ $path = partialCached "func/FormatPath" (dict "path" $path "lang" $lang) $path }}
 
 {{/* Even if not a language context, we must still remove the bundle directory from the path */}}
 {{ $path = strings.TrimPrefix $bundle.File.Dir $path }}
