@@ -21,3 +21,5 @@
 {{ if templates.Exists (printf "partials/%s" .) }}
   {{ $bool = true }}
 {{ end }}
+
+{{ return $bool }}
